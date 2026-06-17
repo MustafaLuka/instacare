@@ -88,6 +88,16 @@
   .ic-emerg .ii{color:var(--red)} .ic-emerg .it{color:var(--red)} .ic-emerg .is{color:#9c5252}
   .ic-meds{background:linear-gradient(135deg,#E6F5EE,#DBF0E5);border:1px solid #BFE3D0}
   .ic-meds .ii{color:var(--green)} .ic-meds .it{color:#1f7a50} .ic-meds .is{color:#4a8268}
+  .ic-body{background:linear-gradient(135deg,#EBF3FB,#DCEAF7);border:1px solid #C5DCF1}
+  .ic-body .ii{color:var(--blue)} .ic-body .it{color:var(--blue-dark)} .ic-body .is{color:#4a6c8f}
+  /* BMI */
+  .bmi-hero{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;text-align:center;box-shadow:var(--shadow);margin-bottom:14px}
+  .bmi-num{font-size:46px;font-weight:800;line-height:1}
+  .bmi-cat{display:inline-block;padding:5px 14px;border-radius:20px;font-size:13.5px;font-weight:800;margin-top:8px;color:#fff}
+  .bmi-bar{height:12px;border-radius:8px;margin:18px 0 6px;background:linear-gradient(90deg,#4a90d9 0 25%,#2F9E6B 25% 50%,#E0A11F 50% 75%,#D14343 75% 100%);position:relative}
+  .bmi-bar .ptr{position:absolute;top:-6px;width:4px;height:24px;background:#1A2433;border-radius:3px;transform:translateX(2px)}
+  .bmi-scale{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);direction:ltr}
+  .advice-box{border-radius:14px;padding:15px;margin-bottom:14px;font-size:14.5px;font-weight:700;text-align:center}
 
   .emerg-block{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:11px}
   .emerg-block .ebt{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:5px}
@@ -308,7 +318,7 @@ function render(){
   if(!isAuthed()){document.getElementById("app").innerHTML=getAccount()?viewLogin():viewSignup();return;}
   ensureReminders();
   const map={home:viewHome,profile:viewProfile,specialty:viewSpecialty,section:viewSection,
-    doc:viewDoc,emergency:viewEmergency,meds:viewMeds,labtrack:viewLabTrack};
+    doc:viewDoc,emergency:viewEmergency,meds:viewMeds,body:viewBody,labtrack:viewLabTrack};
   document.getElementById("app").innerHTML=(map[nav.view]||viewHome)();
 }
 function header(title,sub,onBack){
@@ -368,6 +378,9 @@ function viewProfile(){
     <div class="info-card ic-meds" onclick="go('meds')">
       <div class="ii">💊</div><div style="flex:1"><div class="it">الأدوية والتذكير</div>
       <div class="is">${meds.length?activeMeds+" دوا مفعّل للتذكير":"ضيف أدوية واضبط منبّه مواعيدها"}</div></div><div class="chev" style="color:var(--green)">‹</div></div>
+    <div class="info-card ic-body" onclick="go('body')">
+      <div class="ii">📏</div><div style="flex:1"><div class="it">القياسات والوزن</div>
+      <div class="is">${bodyTeaser(p)}</div></div><div class="chev" style="color:var(--blue)">‹</div></div>
     <div class="section-label"><span>التخصصات</span></div>
     <div class="grid-spec">${tiles}</div>
     <div style="margin-top:18px"><button class="btn ghost" onclick="sheetProfile('${p.id}')">✎ تعديل بيانات الملف</button></div>
@@ -490,6 +503,72 @@ function fireReminder(p,m,t){
 }
 function closeRemind(){document.getElementById("remind").classList.remove("show")}
 
+/* ---- BODY / BMI ---- */
+function lastMeasure(p){const a=(p.measurements||[]).slice().sort((x,y)=>(x.date||"").localeCompare(y.date||""));return a[a.length-1]}
+function bmiCalc(h,w){
+  const m=h/100,bmi=w/(m*m);
+  let cat,color;
+  if(bmi<18.5){cat="نقص وزن";color="#4a90d9"}
+  else if(bmi<25){cat="وزن طبيعي";color="#2F9E6B"}
+  else if(bmi<30){cat="زيادة وزن";color="#E0A11F"}
+  else{cat="سمنة";color="#D14343"}
+  return {bmi,cat,color,lower:18.5*m*m,upper:24.9*m*m};
+}
+function bodyTeaser(p){
+  const l=lastMeasure(p); if(!l||!l.height||!l.weight)return "احسب وزنك المثالي حسب طولك";
+  const b=bmiCalc(l.height,l.weight); return "BMI "+b.bmi.toFixed(1)+" • "+b.cat;
+}
+function viewBody(){
+  const p=getP(); if(!p)return go("home");
+  const arr=(p.measurements||[]).slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  if(!arr.length)return header("📏 القياسات والوزن",p.name,"go('profile')")+`<div class="container">
+    ${empty("📏","لسه مفيش قياسات","حط طولك ووزنك ونقولك وزنك مظبوط ولا لأ")}</div>
+    <button class="btn fab" onclick="sheetBody()">＋ إضافة قياس</button>`;
+  const l=arr[arr.length-1], b=bmiCalc(l.height,l.weight);
+  const pct=Math.max(0,Math.min(100,(b.bmi-15)/(40-15)*100));
+  let advice,acolor,abg;
+  if(b.bmi<18.5){const g=b.lower-l.weight;advice=`محتاج تزيد حوالي <b>${g.toFixed(1)} كجم</b> توصل لأقل وزن صحي`;acolor="#2c5a8a";abg="#EBF3FB"}
+  else if(b.bmi<25){advice="وزنك مثالي 👏 حافظ عليه كده";acolor="#1f7a50";abg="#E6F5EE"}
+  else{const ls=l.weight-b.upper;advice=`محتاج تخس حوالي <b>${ls.toFixed(1)} كجم</b> توصل للوزن الصحي`;acolor="#a13b3b";abg="#FCEBEB"}
+  const points=arr.filter(m=>m.weight).map(m=>({date:m.date,value:+m.weight}));
+  return header("📏 القياسات والوزن",p.name,"go('profile')")+`<div class="container">
+    <div class="bmi-hero">
+      <div style="font-size:12.5px;color:var(--muted);font-weight:800">مؤشر كتلة الجسم (BMI)</div>
+      <div class="bmi-num" style="color:${b.color}">${b.bmi.toFixed(1)}</div>
+      <div class="bmi-cat" style="background:${b.color}">${b.cat}</div>
+      <div class="bmi-bar"><div class="ptr" style="right:${pct}%"></div></div>
+      <div class="bmi-scale"><span>15</span><span>18.5</span><span>25</span><span>30</span><span>40</span></div>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:12px">الطول ${l.height} سم • الوزن ${l.weight} كجم</div>
+    </div>
+    <div class="advice-box" style="background:${abg};color:${acolor}">${advice}</div>
+    <div class="emerg-block"><div class="ebt">🎯 الوزن الصحي لطولك</div>
+      <div class="ebv"><b>${b.lower.toFixed(1)} — ${b.upper.toFixed(1)} كجم</b></div></div>
+    ${points.length>1?`<div class="section-label" style="margin-top:8px"><span>📈 متابعة الوزن</span></div>
+      <div class="chart-box">${lineChart(points)}</div>`:""}
+    <div class="section-label"><span>السجل</span></div>
+    <table class="lab-table"><tr><th>التاريخ</th><th>الطول</th><th>الوزن</th><th>BMI</th></tr>
+    ${arr.slice().reverse().map(m=>`<tr><td>${fmtDate(m.date)}</td><td>${m.height}</td><td>${m.weight}</td><td>${bmiCalc(m.height,m.weight).bmi.toFixed(1)}</td></tr>`).join("")}</table>
+    <p class="hint">ملاحظة: حساب الـ BMI ده للبالغين. للأطفال والحوامل المعايير مختلفة.</p>
+  </div>
+  <button class="btn fab" onclick="sheetBody()">＋ إضافة قياس جديد</button>`;
+}
+function sheetBody(){
+  const l=lastMeasure(getP());
+  openSheet(`<h2>📏 قياس جديد</h2>
+    <div class="row2"><div><label>الطول (سم)</label><input id="b_h" type="number" inputmode="decimal" value="${l?l.height:''}" placeholder="170"></div>
+    <div><label>الوزن (كجم)</label><input id="b_w" type="number" inputmode="decimal" placeholder="70"></div></div>
+    <label>التاريخ</label><input id="b_date" type="date" value="${today()}">
+    <button class="btn" style="margin-top:20px" onclick="saveBody()">حساب وحفظ</button>`);
+}
+function saveBody(){
+  const h=parseFloat(val("b_h")),w=parseFloat(val("b_w"));
+  if(!h||h<50||h>250)return alert("اكتب طول صحيح بالسنتيمتر");
+  if(!w||w<2||w>400)return alert("اكتب وزن صحيح بالكيلو");
+  const p=getP(); if(!p.measurements)p.measurements=[];
+  p.measurements.push({date:val("b_date")||today(),height:h,weight:w});
+  save();closeSheet();render();
+}
+
 /* ---- SPECIALTY / SECTION / DOC / LAB (as before) ---- */
 function viewSpecialty(){
   const p=getP(),s=getS(); if(!s)return go("profile");
@@ -584,7 +663,7 @@ function saveProfile(id){
   const name=val("f_name").trim(); if(!name)return alert("اكتب الاسم");
   const rel=val("f_rel").trim(),birth=val("f_birth");
   if(id){const p=DB.profiles.find(x=>x.id===id);p.name=name;p.relation=rel;p.birth=birth;}
-  else DB.profiles.push({id:uid(),name,relation:rel,birth,color:DB.profiles.length%2?"green":"",specs:[],emergency:{},meds:[]});
+  else DB.profiles.push({id:uid(),name,relation:rel,birth,color:DB.profiles.length%2?"green":"",specs:[],emergency:{},meds:[],measurements:[]});
   save();closeSheet();render();
 }
 function delProfile(id){if(!confirm("حذف الملف وكل وثائقه؟"))return;DB.profiles=DB.profiles.filter(x=>x.id!==id);save();closeSheet();go("home")}
