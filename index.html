@@ -228,6 +228,37 @@
   .remind-card h2{font-size:22px;color:var(--green)}
   .remind-card .rc-dose{font-size:16px;font-weight:800;margin:6px 0}
   .remind-card .rc-meta{color:var(--muted);font-size:13px;margin-bottom:18px}
+
+  /* dashboard */
+  .dash{padding:14px 16px 0}
+  .dash-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:11px}
+  .dash-card .dh{font-weight:800;font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+  .dash-item{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13.5px;border-top:1px solid var(--line)}
+  .dash-item:first-of-type{border-top:none}
+  .dash-item .di-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .dash-item .di-t{flex:1;min-width:0}
+  .dash-item .di-time{font-size:12px;font-weight:800;color:var(--blue);direction:ltr}
+  .dash-empty{font-size:13px;color:var(--muted);text-align:center;padding:6px 0}
+  .alert-row{background:var(--red-light);color:var(--red);border-radius:10px;padding:9px 11px;font-size:12.5px;font-weight:700;margin-top:6px}
+  .ic-vital{background:linear-gradient(135deg,#FBEAF2,#F8DCEA);border:1px solid #EFC2D7}
+  .ic-vital .ii{color:#C0397B} .ic-vital .it{color:#A12E68} .ic-vital .is{color:#9c5279}
+  .ic-appt{background:linear-gradient(135deg,#FFF3E0,#FFEACB);border:1px solid #F3D9A8}
+  .ic-appt .ii{color:var(--amber)} .ic-appt .it{color:#9a6320} .ic-appt .is{color:#9a7b4a}
+  .tabs{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto}
+  .tab{padding:9px 15px;border-radius:11px;background:var(--bg);border:1.5px solid var(--line);font-weight:800;
+    font-size:13px;cursor:pointer;color:var(--muted);white-space:nowrap}
+  .tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .toolbtn{background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:11px;padding:9px 11px;font-size:13px;font-weight:700;cursor:pointer}
+  .appt-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;box-shadow:var(--shadow);margin-bottom:10px;display:flex;align-items:center;gap:12px}
+  .appt-card.done{opacity:.55}
+  .appt-card .ac-d{width:50px;text-align:center;flex-shrink:0;background:var(--blue-light);border-radius:11px;padding:6px 2px}
+  .appt-card .ac-day{font-size:19px;font-weight:800;color:var(--blue);line-height:1}
+  .appt-card .ac-mon{font-size:10px;color:var(--muted)}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .stat-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+  .stat-box .sv{font-size:24px;font-weight:800;color:var(--blue)}
+  .stat-box .sl{font-size:11.5px;color:var(--muted);margin-top:3px}
+  @media print{body{max-width:100%;box-shadow:none}.no-print{display:none!important}}
 </style>
 </head>
 <body>
@@ -318,7 +349,8 @@ function render(){
   if(!isAuthed()){document.getElementById("app").innerHTML=getAccount()?viewLogin():viewSignup();return;}
   ensureReminders();
   const map={home:viewHome,profile:viewProfile,specialty:viewSpecialty,section:viewSection,
-    doc:viewDoc,emergency:viewEmergency,meds:viewMeds,body:viewBody,labtrack:viewLabTrack};
+    doc:viewDoc,emergency:viewEmergency,meds:viewMeds,body:viewBody,vitals:viewVitals,
+    appts:viewAppts,labtrack:viewLabTrack};
   document.getElementById("app").innerHTML=(map[nav.view]||viewHome)();
 }
 function header(title,sub,onBack){
@@ -338,9 +370,64 @@ function viewHome(){
   return `
   <div class="brand"><div class="mark">＋</div>
     <div style="flex:1"><h1>انستا كير</h1><p>كل تاريخك الطبي في مكان واحد</p></div>
+    <button class="toolbtn" onclick="sheetBackup()">⚙</button>
     <button class="logout" onclick="logout()">خروج</button></div>
+  ${DB.profiles.length?dashboard():""}
   <div class="container"><div class="section-label"><span>الملفات الصحية</span></div>${cards}</div>
   <button class="btn fab" onclick="sheetProfile()">＋ إضافة ملف جديد</button>`;
+}
+function dashboard(){
+  const day=today();
+  // today's meds across profiles
+  let meds=[];
+  DB.profiles.forEach(p=>(p.meds||[]).forEach(m=>{if(m.active===false)return;(m.times||[]).forEach(t=>{
+    const taken=(m.log||[]).includes(day+"|"+t);
+    meds.push({pid:p.id,mid:m.id,p:p.name,name:m.name,dose:m.dose,t,taken});})}));
+  meds.sort((a,b)=>a.t.localeCompare(b.t));
+  // upcoming appointments (today or future, not done) next 14 days
+  let appts=[];
+  DB.profiles.forEach(p=>(p.appointments||[]).forEach(a=>{if(!a.done&&a.date>=day)appts.push({...a,pName:p.name})}));
+  appts.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)); appts=appts.slice(0,4);
+  // lab alerts (out of range), latest few
+  let alerts=[];
+  DB.profiles.forEach(p=>p.specs.forEach(s=>(s.docs&&s.docs.lab||[]).forEach(d=>(d.labRows||[]).forEach(r=>{if(isOut(r))alerts.push(p.name+": "+r.name+" = "+r.value)}))));
+  alerts=alerts.slice(0,3);
+
+  const medsHtml=meds.length?meds.map(m=>`<div class="dash-item" style="cursor:pointer" onclick="takeMed('${m.pid}','${m.mid}','${m.t}')">
+    <div class="di-ic" style="background:${m.taken?'var(--green-light)':'var(--blue-light)'}">${m.taken?'✅':'💊'}</div>
+    <div class="di-t"><b>${esc(m.name)}</b>${m.dose?' • '+esc(m.dose):''}<div style="font-size:11.5px;color:var(--muted)">${esc(m.p)}${m.taken?' • اتاخد':''}</div></div>
+    <div class="di-time">${m.t}</div></div>`).join(""):`<div class="dash-empty">مفيش أدوية النهاردة</div>`;
+  const apptHtml=appts.length?appts.map(a=>`<div class="dash-item">
+    <div class="di-ic" style="background:#FFF3E0">${a.type==='vaccine'?'💉':'📅'}</div>
+    <div class="di-t"><b>${esc(a.title)}</b><div style="font-size:11.5px;color:var(--muted)">${esc(a.pName)}${a.spec?' • '+esc(a.spec):''}</div></div>
+    <div class="di-time">${fmtDate(a.date).slice(0,5)}${a.time?' '+a.time:''}</div></div>`).join(""):`<div class="dash-empty">مفيش مواعيد قريبة</div>`;
+
+  return `<div class="dash">
+    <div class="dash-card"><div class="dh">💊 أدوية النهاردة</div>${medsHtml}</div>
+    <div class="dash-card"><div class="dh">📅 المواعيد القادمة</div>${apptHtml}</div>
+    ${alerts.length?`<div class="dash-card"><div class="dh">⚠️ تنبيهات تحاليل</div>${alerts.map(a=>`<div class="alert-row">${esc(a)}</div>`).join("")}</div>`:""}
+  </div>`;
+}
+/* backup */
+function sheetBackup(){
+  openSheet(`<h2>⚙ النسخ الاحتياطي</h2>
+    <p class="hint" style="text-align:right">احفظ نسخة من كل بياناتك في ملف، أو استرجعها على أي جهاز.</p>
+    <button class="btn" style="margin-top:8px" onclick="exportData()">⬇️ تصدير نسخة احتياطية (ملف)</button>
+    <button class="btn ghost" style="margin-top:10px" onclick="document.getElementById('imp').click()">⬆️ استيراد نسخة</button>
+    <input id="imp" type="file" accept="application/json,.json" style="display:none" onchange="importData(event)">`);
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(DB)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="instacare-backup-"+today()+".json";a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function importData(e){
+  const f=e.target.files[0]; if(!f)return; const r=new FileReader();
+  r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d||!Array.isArray(d.profiles))throw 0;
+    if(!confirm("ده هيستبدل كل البيانات الحالية. متأكد؟"))return;
+    DB=d;save();closeSheet();go("home");}catch(err){alert("الملف مش صحيح")}};
+  r.readAsText(f);
 }
 
 function viewProfile(){
@@ -381,9 +468,17 @@ function viewProfile(){
     <div class="info-card ic-body" onclick="go('body')">
       <div class="ii">📏</div><div style="flex:1"><div class="it">القياسات والوزن</div>
       <div class="is">${bodyTeaser(p)}</div></div><div class="chev" style="color:var(--blue)">‹</div></div>
+    <div class="info-card ic-vital" onclick="go('vitals')">
+      <div class="ii">💓</div><div style="flex:1"><div class="it">المؤشرات الحيوية</div>
+      <div class="is">${vitalTeaser(p)}</div></div><div class="chev" style="color:#C0397B">‹</div></div>
+    <div class="info-card ic-appt" onclick="go('appts')">
+      <div class="ii">📅</div><div style="flex:1"><div class="it">المواعيد والتطعيمات</div>
+      <div class="is">${apptTeaser(p)}</div></div><div class="chev" style="color:var(--amber)">‹</div></div>
     <div class="section-label"><span>التخصصات</span></div>
     <div class="grid-spec">${tiles}</div>
-    <div style="margin-top:18px"><button class="btn ghost" onclick="sheetProfile('${p.id}')">✎ تعديل بيانات الملف</button></div>
+    <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn ghost" onclick="exportPDF()">🖨 تصدير / طباعة الملف (PDF)</button>
+      <button class="btn ghost" onclick="sheetProfile('${p.id}')">✎ تعديل بيانات الملف</button></div>
   </div>`;
 }
 function liveSearch(v){go('profile',{q:v});const i=document.getElementById('q');if(i){i.focus();i.setSelectionRange(v.length,v.length)}}
@@ -487,6 +582,8 @@ function checkReminders(){
   const d=new Date(),now=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"),day=today();
   DB.profiles.forEach(p=>(p.meds||[]).forEach(m=>{if(m.active===false)return;
     (m.times||[]).forEach(t=>{if(t===now){const k=day+"|"+p.id+"|"+m.id+"|"+t;if(!_fired[k]){_fired[k]=1;fireReminder(p,m,t)}}})}));
+  DB.profiles.forEach(p=>(p.appointments||[]).forEach(a=>{if(a.done||!a.time||a.date!==day)return;
+    if(a.time===now){const k="ap|"+a.id+"|"+day;if(!_fired[k]){_fired[k]=1;fireApptReminder(p,a)}}}));
 }
 function fireReminder(p,m,t){
   try{if(navigator.vibrate)navigator.vibrate([400,150,400,150,400])}catch(e){}
@@ -497,8 +594,19 @@ function fireReminder(p,m,t){
     <div class="rc-dose">${esc(m.name)}${m.dose?" — "+esc(m.dose):""}</div>
     <div class="rc-meta">${esc(p.name)} • الساعة ${t}${m.note?" • "+esc(m.note):""}</div>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn green" onclick="closeRemind()">خدته ✅</button>
+      <button class="btn green" onclick="takeMed('${p.id}','${m.id}','${t}')">خدته ✅</button>
       <button class="btn ghost" onclick="closeRemind()">تأجيل</button></div>`;
+  document.getElementById("remind").classList.add("show");
+}
+function fireApptReminder(p,a){
+  try{if(navigator.vibrate)navigator.vibrate([400,150,400])}catch(e){}
+  try{if("Notification"in window&&Notification.permission==="granted")
+    new Notification((a.type==="vaccine"?"💉 موعد تطعيم: ":"📅 موعد: ")+a.title,{body:p.name+(a.spec?" • "+a.spec:""),icon:"icon.svg",tag:a.id})}catch(e){}
+  const box=document.getElementById("remindBox");
+  box.innerHTML=`<div class="rc-ic">${a.type==="vaccine"?"💉":"📅"}</div><h2>عندك موعد!</h2>
+    <div class="rc-dose">${esc(a.title)}</div>
+    <div class="rc-meta">${esc(p.name)}${a.spec?" • "+esc(a.spec):""}${a.note?" • "+esc(a.note):""}</div>
+    <button class="btn" onclick="closeRemind()">تمام</button>`;
   document.getElementById("remind").classList.add("show");
 }
 function closeRemind(){document.getElementById("remind").classList.remove("show")}
@@ -545,6 +653,7 @@ function viewBody(){
       <div class="ebv"><b>${b.lower.toFixed(1)} — ${b.upper.toFixed(1)} كجم</b></div></div>
     ${points.length>1?`<div class="section-label" style="margin-top:8px"><span>📈 متابعة الوزن</span></div>
       <div class="chart-box">${lineChart(points)}</div>`:""}
+    <button class="btn ghost" style="margin-bottom:14px" onclick="sheetCalc()">🔥 حاسبة السعرات والماء</button>
     <div class="section-label"><span>السجل</span></div>
     <table class="lab-table"><tr><th>التاريخ</th><th>الطول</th><th>الوزن</th><th>BMI</th></tr>
     ${arr.slice().reverse().map(m=>`<tr><td>${fmtDate(m.date)}</td><td>${m.height}</td><td>${m.weight}</td><td>${bmiCalc(m.height,m.weight).bmi.toFixed(1)}</td></tr>`).join("")}</table>
@@ -567,6 +676,164 @@ function saveBody(){
   const p=getP(); if(!p.measurements)p.measurements=[];
   p.measurements.push({date:val("b_date")||today(),height:h,weight:w});
   save();closeSheet();render();
+}
+
+/* ---- CALCULATORS (calories + water) ---- */
+function sheetCalc(){
+  const l=lastMeasure(getP());
+  if(!l)return alert("ضيف طولك ووزنك الأول");
+  const p=getP();
+  openSheet(`<h2>🔥 حاسبة السعرات والماء</h2>
+    <p class="hint" style="text-align:right">بنحسب على آخر قياس: طول ${l.height} سم • وزن ${l.weight} كجم</p>
+    <div class="row2"><div><label>النوع</label><select id="c_sex"><option value="m">ذكر</option><option value="f">أنثى</option></select></div>
+    <div><label>السن</label><input id="c_age" type="number" inputmode="numeric" value="${p.birth?Math.max(1,new Date().getFullYear()-(+p.birth.slice(0,4))):''}" placeholder="30"></div></div>
+    <label>مستوى النشاط</label>
+    <select id="c_act"><option value="1.2">قليل الحركة</option><option value="1.375">نشاط خفيف</option>
+      <option value="1.55" selected>نشاط متوسط</option><option value="1.725">نشاط عالي</option></select>
+    <button class="btn" style="margin-top:18px" onclick="doCalc(${l.height},${l.weight})">احسب</button>
+    <div id="c_res"></div>`);
+}
+function doCalc(h,w){
+  const sex=val("c_sex"),age=parseFloat(val("c_age")),act=parseFloat(val("c_act"));
+  if(!age||age<1||age>120)return alert("اكتب سن صحيح");
+  const bmr=10*w+6.25*h-5*age+(sex==="m"?5:-161);
+  const tdee=Math.round(bmr*act), water=(w*0.033).toFixed(1);
+  document.getElementById("c_res").innerHTML=`<div class="stat-grid" style="margin-top:18px">
+    <div class="stat-box"><div class="sv">${tdee}</div><div class="sl">سعرة/يوم للحفاظ على وزنك</div></div>
+    <div class="stat-box"><div class="sv">${tdee-500}</div><div class="sl">سعرة/يوم للتخسيس</div></div>
+    <div class="stat-box"><div class="sv">${water}</div><div class="sl">لتر ماء/يوم</div></div>
+    <div class="stat-box"><div class="sv">${Math.round(bmr)}</div><div class="sl">معدل الأيض الأساسي</div></div></div>
+    <p class="hint">تقديرات إرشادية — استشر طبيب/أخصائي تغذية للخطة الدقيقة.</p>`;
+}
+
+/* ---- VITALS ---- */
+const VITALS=[
+  {id:"bp",name:"الضغط",icon:"🩸",unit:"mmHg",two:true},
+  {id:"sugar",name:"السكر",icon:"🍬",unit:"mg/dL"},
+  {id:"pulse",name:"النبض",icon:"❤️",unit:"bpm"},
+  {id:"temp",name:"الحرارة",icon:"🌡️",unit:"°C"},
+];
+function lastVital(p,type){const a=(p.vitals||[]).filter(v=>v.type===type).sort((x,y)=>(x.date||"").localeCompare(y.date||""));return a[a.length-1]}
+function vFmt(v){return v.type==="bp"?(v.v1+"/"+v.v2):v.v1}
+function vitalTeaser(p){
+  for(const t of VITALS){const l=lastVital(p,t.id);if(l)return t.name+" "+vFmt(l)+" "+t.unit}
+  return "سجّل الضغط والسكر والنبض والحرارة";
+}
+function viewVitals(){
+  const p=getP(); if(!p)return go("home");
+  const type=VITALS.find(v=>v.id===nav.track)?nav.track:"bp";
+  const cfg=VITALS.find(v=>v.id===type);
+  const tabs=VITALS.map(v=>`<div class="tab ${v.id===type?'active':''}" onclick="go('vitals',{track:'${v.id}'})">${v.icon} ${v.name}</div>`).join("");
+  const arr=(p.vitals||[]).filter(v=>v.type===type).sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  const l=arr[arr.length-1];
+  const hero=l?`<div class="bmi-hero"><div style="font-size:12.5px;color:var(--muted);font-weight:800">آخر قراءة</div>
+    <div class="bmi-num" style="color:var(--blue)">${vFmt(l)}</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px">${cfg.unit} • ${fmtDate(l.date)}</div></div>`
+    :empty(cfg.icon,"مفيش قراءات","ضيف أول قراءة");
+  const points=arr.map(v=>({date:v.date,value:+v.v1}));
+  const chart=points.length>1?`<div class="section-label">📈 المتابعة${type==='bp'?' (الانقباضي)':''}</div><div class="chart-box">${lineChart(points)}</div>`:"";
+  const hist=arr.length?`<div class="section-label">السجل</div><table class="lab-table"><tr><th>التاريخ</th><th>القراءة</th></tr>
+    ${arr.slice().reverse().map(v=>`<tr><td>${fmtDate(v.date)}</td><td><b>${vFmt(v)}</b> ${cfg.unit}</td></tr>`).join("")}</table>`:"";
+  return header("💓 المؤشرات الحيوية",p.name,"go('profile')")+`<div class="container">
+    <div class="tabs">${tabs}</div>${hero}${chart}${hist}</div>
+    <button class="btn fab" onclick="sheetVital('${type}')">＋ إضافة قراءة (${cfg.name})</button>`;
+}
+function sheetVital(type){
+  const cfg=VITALS.find(v=>v.id===type);
+  openSheet(`<h2>${cfg.icon} إضافة قراءة — ${cfg.name}</h2>
+    ${cfg.two?`<div class="row2"><div><label>الانقباضي (الأعلى)</label><input id="v1" type="number" inputmode="numeric" placeholder="120"></div>
+      <div><label>الانبساطي (الأقل)</label><input id="v2" type="number" inputmode="numeric" placeholder="80"></div></div>`
+      :`<label>القيمة (${cfg.unit})</label><input id="v1" type="number" inputmode="decimal" placeholder="0">`}
+    <label>التاريخ</label><input id="v_date" type="date" value="${today()}">
+    <button class="btn" style="margin-top:18px" onclick="saveVital('${type}')">حفظ</button>`);
+}
+function saveVital(type){
+  const cfg=VITALS.find(v=>v.id===type);const v1=parseFloat(val("v1"));
+  if(isNaN(v1))return alert("اكتب القيمة");
+  const rec={type,date:val("v_date")||today(),v1};
+  if(cfg.two){const v2=parseFloat(val("v2"));if(isNaN(v2))return alert("اكتب القيمتين");rec.v2=v2}
+  const p=getP();if(!p.vitals)p.vitals=[];p.vitals.push(rec);save();closeSheet();render();
+}
+
+/* ---- APPOINTMENTS & VACCINES ---- */
+function apptTeaser(p){
+  const day=today();const up=(p.appointments||[]).filter(a=>!a.done&&a.date>=day).sort((a,b)=>a.date.localeCompare(b.date))[0];
+  if(!up)return "ضيف مواعيد الكشف والتطعيمات";
+  return (up.type==="vaccine"?"💉 ":"📅 ")+up.title+" — "+fmtDate(up.date);
+}
+function viewAppts(){
+  const p=getP(); if(!p)return go("home");const day=today();
+  const arr=(p.appointments||[]).slice().sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")));
+  const up=arr.filter(a=>!a.done&&a.date>=day), past=arr.filter(a=>a.done||a.date<day);
+  const card=a=>`<div class="appt-card ${a.done||a.date<day?'done':''}">
+    <div class="ac-d"><div class="ac-day">${a.date.slice(8,10)}</div><div class="ac-mon">${a.date.slice(5,7)}/${a.date.slice(0,4)}</div></div>
+    <div style="flex:1;min-width:0" onclick="sheetAppt('${a.id}')"><div class="card-title">${a.type==='vaccine'?'💉 ':'📅 '}${esc(a.title)}</div>
+      <div class="card-meta">${a.time?a.time+' • ':''}${a.spec?esc(a.spec):''}${a.note?' • '+esc(truncate(a.note,24)):''}</div></div>
+    <label class="switch"><input type="checkbox" ${a.done?'checked':''} onchange="toggleAppt('${a.id}',this.checked)"><span class="sl"></span></label></div>`;
+  return header("📅 المواعيد والتطعيمات",p.name,"go('profile')")+`<div class="container">
+    <div class="section-label"><span>القادمة</span></div>
+    ${up.length?up.map(card).join(""):`<div class="dash-empty" style="padding:14px">مفيش مواعيد قادمة</div>`}
+    ${past.length?`<div class="section-label" style="margin-top:16px"><span>السابقة</span></div>${past.map(card).join("")}`:""}
+    <p class="hint">التذكير بيرنّ في معاد الموعد طول ما التطبيق مفتوح/بالخلفية.</p>
+  </div>
+  <button class="btn fab" onclick="sheetAppt()">＋ إضافة موعد / تطعيم</button>`;
+}
+function toggleAppt(id,done){const a=(getP().appointments||[]).find(x=>x.id===id);if(a){a.done=done;save()}}
+function sheetAppt(id){
+  const list=getP().appointments||[];let a=id?list.find(x=>x.id===id):null;
+  const specs=getP().specs.map(s=>esc(s.name));
+  openSheet(`<h2>${a?"تعديل موعد":"موعد / تطعيم جديد"}</h2>
+    <label>النوع</label><select id="ap_type"><option value="visit" ${a&&a.type==='visit'?'selected':''}>كشف / متابعة</option><option value="vaccine" ${a&&a.type==='vaccine'?'selected':''}>تطعيم 💉</option></select>
+    <label>العنوان</label><input id="ap_title" value="${a?esc(a.title):''}" placeholder="مثلاً: متابعة قلب / تطعيم نزلة">
+    <div class="row2"><div><label>التاريخ</label><input id="ap_date" type="date" value="${a?a.date:today()}"></div>
+    <div><label>الوقت</label><input id="ap_time" type="time" value="${a?a.time||'':''}" style="direction:ltr;text-align:center"></div></div>
+    <label>التخصص (اختياري)</label><input id="ap_spec" list="speclist" value="${a?esc(a.spec||''):''}" placeholder="مثلاً: قلب">
+    <datalist id="speclist">${specs.map(s=>`<option value="${s}">`).join("")}</datalist>
+    <label>ملاحظات</label><textarea id="ap_note" placeholder="اختياري">${a?esc(a.note||''):''}</textarea>
+    <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn" onclick="saveAppt('${id||''}')">حفظ</button>
+      ${a?`<button class="btn danger" onclick="delAppt('${id}')">حذف</button>`:""}</div>`);
+}
+function saveAppt(id){
+  const title=val("ap_title").trim();if(!title)return alert("اكتب العنوان");
+  const p=getP();if(!p.appointments)p.appointments=[];
+  const data={type:val("ap_type"),title,date:val("ap_date")||today(),time:val("ap_time"),spec:val("ap_spec").trim(),note:val("ap_note").trim()};
+  if(id){const a=p.appointments.find(x=>x.id===id);data.done=a.done;Object.assign(a,data);}
+  else p.appointments.push({id:uid(),done:false,...data});
+  save();closeSheet();render();
+}
+function delAppt(id){if(!confirm("حذف الموعد؟"))return;const p=getP();p.appointments=p.appointments.filter(x=>x.id!==id);save();closeSheet();render()}
+
+/* ---- adherence: mark med taken ---- */
+function takeMed(pid,mid,t){
+  const p=DB.profiles.find(x=>x.id===pid);const m=p&&(p.meds||[]).find(x=>x.id===mid);
+  if(m){if(!m.log)m.log=[];const k=today()+"|"+t;const i=m.log.indexOf(k);if(i<0)m.log.push(k);else m.log.splice(i,1);save()}
+  closeRemind();render();
+}
+
+/* ---- PDF / print summary ---- */
+function exportPDF(){
+  const p=getP();if(!p)return;const e=p.emergency||{};
+  const esc2=s=>(s==null?"":""+s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  let html=`<html dir="rtl"><head><meta charset="utf-8"><title>${esc2(p.name)} — انستا كير</title>
+    <style>body{font-family:Tahoma,Arial;padding:24px;color:#1A2433}h1{color:#2B6CB0}h2{color:#2B6CB0;border-bottom:2px solid #EBF3FB;padding-bottom:4px;margin-top:24px}
+    table{width:100%;border-collapse:collapse;margin:8px 0}td,th{border:1px solid #ccc;padding:6px;text-align:right;font-size:13px}
+    .muted{color:#777}</style></head><body>
+    <h1>＋ انستا كير — ${esc2(p.name)}</h1>
+    <div class="muted">${esc2(p.relation||"")} ${p.birth?"• مواليد "+p.birth:""} • طُبع في ${fmtDate(today())}</div>
+    <h2>🚨 معلومات الطوارئ</h2>
+    <p>فصيلة الدم: <b>${esc2(e.blood||"—")}</b><br>الحساسية: ${esc2(e.allergies||"—")}<br>أمراض مزمنة: ${esc2(e.chronic||"—")}<br>أدوية حالية: ${esc2(e.meds||"—")}</p>`;
+  (p.meds||[]).length&&(html+=`<h2>💊 الأدوية</h2><table><tr><th>الدوا</th><th>الجرعة</th><th>المواعيد</th></tr>${p.meds.map(m=>`<tr><td>${esc2(m.name)}</td><td>${esc2(m.dose||"")}</td><td>${(m.times||[]).join("، ")}</td></tr>`).join("")}</table>`);
+  p.specs.forEach(s=>{
+    html+=`<h2>🏥 ${esc2(s.name)}</h2>`;
+    if(s.note&&s.note.text)html+=`<p><b>ملاحظة آخر دكتور:</b> ${esc2(s.note.text)} <span class="muted">(${s.note.doctor?"د. "+esc2(s.note.doctor)+" ":""}${fmtDate(s.note.date)})</span></p>`;
+    SECTIONS.filter(x=>x.id!=="note").forEach(sec=>{const ds=(s.docs[sec.id]||[]);if(!ds.length)return;
+      html+=`<p><b>${sec.name}:</b></p><table><tr><th>الوثيقة</th><th>التاريخ</th><th>تفاصيل</th></tr>${ds.map(d=>`<tr><td>${esc2(d.title)}</td><td>${fmtDate(d.date)}</td><td>${(d.labRows||[]).map(r=>esc2(r.name)+": "+esc2(r.value)+(r.unit?" "+esc2(r.unit):"")).join("، ")||esc2(d.note||"")}</td></tr>`).join("")}</table>`;});
+  });
+  html+=`</body></html>`;
+  const w=window.open("","_blank");
+  if(!w)return alert("اسمح بالنوافذ المنبثقة عشان نطبع الملف");
+  w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),400);
 }
 
 /* ---- SPECIALTY / SECTION / DOC / LAB (as before) ---- */
@@ -663,7 +930,7 @@ function saveProfile(id){
   const name=val("f_name").trim(); if(!name)return alert("اكتب الاسم");
   const rel=val("f_rel").trim(),birth=val("f_birth");
   if(id){const p=DB.profiles.find(x=>x.id===id);p.name=name;p.relation=rel;p.birth=birth;}
-  else DB.profiles.push({id:uid(),name,relation:rel,birth,color:DB.profiles.length%2?"green":"",specs:[],emergency:{},meds:[],measurements:[]});
+  else DB.profiles.push({id:uid(),name,relation:rel,birth,color:DB.profiles.length%2?"green":"",specs:[],emergency:{},meds:[],measurements:[],vitals:[],appointments:[]});
   save();closeSheet();render();
 }
 function delProfile(id){if(!confirm("حذف الملف وكل وثائقه؟"))return;DB.profiles=DB.profiles.filter(x=>x.id!==id);save();closeSheet();go("home")}
