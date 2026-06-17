@@ -1,0 +1,16 @@
+{
+  "name": "InstaCare — انستا كير",
+  "short_name": "انستا كير",
+  "description": "كل تاريخك الطبي في مكان واحد",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2B6CB0",
+  "theme_color": "#2B6CB0",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

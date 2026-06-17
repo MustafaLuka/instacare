@@ -2,15 +2,20 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2B6CB0">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" href="icon.svg">
 <title>InstaCare — انستا كير</title>
 <style>
   :root{
     --blue:#2B6CB0; --blue-dark:#234e7d; --blue-light:#EBF3FB; --blue-soft:#DCEAF7;
     --green:#2F9E6B; --green-light:#E6F5EE;
-    --red:#D14343; --red-light:#FCEBEB;
-    --ink:#1A2433; --muted:#7B8794; --line:#E4E9F0; --bg:#F6F9FC; --white:#fff;
-    --shadow:0 2px 10px rgba(43,108,176,.08); --shadow-lg:0 8px 28px rgba(43,108,176,.16);
+    --red:#D14343; --red-light:#FCEBEB; --amber:#B8772A;
+    --ink:#1A2433; --muted:#7B8794; --line:#E4E9F0; --bg:#F4F8FC; --white:#fff;
+    --shadow:0 2px 12px rgba(43,108,176,.09); --shadow-lg:0 10px 30px rgba(43,108,176,.18);
+    --grad:linear-gradient(135deg,#2B6CB0,#4a90d9);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
@@ -18,51 +23,50 @@
     font-family:"Segoe UI",Tahoma,"Cairo",system-ui,sans-serif;
     background:var(--bg); color:var(--ink); line-height:1.5;
     max-width:480px; margin:0 auto; min-height:100vh; position:relative;
-    box-shadow:0 0 40px rgba(0,0,0,.05);
+    box-shadow:0 0 40px rgba(0,0,0,.06);
   }
-  .app{padding-bottom:24px;min-height:100vh;background:var(--bg)}
+  .app{padding-bottom:30px;min-height:100vh;background:var(--bg)}
 
   header{
     background:var(--white); color:var(--ink); padding:14px 16px;
     display:flex;align-items:center;gap:10px; position:sticky;top:0;z-index:50;
-    border-bottom:1px solid var(--line);
+    border-bottom:1px solid var(--line); box-shadow:0 1px 0 rgba(0,0,0,.01);
   }
-  header .back{
-    background:var(--blue-light);border:none;color:var(--blue);width:38px;height:38px;
-    border-radius:12px;font-size:20px;cursor:pointer;display:flex;align-items:center;
-    justify-content:center;flex-shrink:0;transition:.15s
-  }
+  header .back{background:var(--blue-light);border:none;color:var(--blue);width:38px;height:38px;
+    border-radius:12px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:.15s}
   header .back:active{transform:scale(.92)}
   header .titles{flex:1;min-width:0}
-  header h1{font-size:17px;margin:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  header h1{font-size:17px;margin:0;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   header .sub{font-size:12px;color:var(--muted);margin-top:1px}
-  .logo-dot{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--blue),#4a90d9);
-    display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0}
+  .logo-dot{width:36px;height:36px;border-radius:11px;background:var(--grad);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;flex-shrink:0;font-weight:700}
 
-  .brand{background:linear-gradient(135deg,var(--blue),#3f86d4);color:#fff;padding:20px 18px 22px;
-    display:flex;align-items:center;gap:12px}
-  .brand .mark{width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.18);
-    display:flex;align-items:center;justify-content:center;font-size:24px}
-  .brand h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.3px}
-  .brand p{margin:2px 0 0;font-size:12.5px;opacity:.9}
+  .brand{background:var(--grad);color:#fff;padding:22px 18px 26px;display:flex;align-items:center;gap:13px;
+    border-radius:0 0 26px 26px;box-shadow:var(--shadow-lg)}
+  .brand .mark{width:50px;height:50px;border-radius:14px;background:rgba(255,255,255,.2);
+    display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+  .brand h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.3px}
+  .brand p{margin:3px 0 0;font-size:12.5px;opacity:.92}
+  .brand .logout{background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:11px;
+    padding:9px 11px;font-size:13px;font-weight:700;cursor:pointer}
 
   .container{padding:16px}
-  .section-label{font-size:13px;color:var(--muted);font-weight:700;margin:6px 2px 12px;display:flex;
+  .section-label{font-size:13px;color:var(--muted);font-weight:800;margin:8px 2px 12px;display:flex;
     align-items:center;justify-content:space-between}
 
   .card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px;
-    box-shadow:var(--shadow);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:13px;
-    margin-bottom:11px}
+    box-shadow:var(--shadow);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:13px;margin-bottom:11px}
   .card:active{transform:scale(.985);box-shadow:var(--shadow-lg)}
-  .avatar{width:48px;height:48px;border-radius:50%;background:var(--blue-light);color:var(--blue);
-    display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0}
+  .avatar{width:50px;height:50px;border-radius:50%;background:var(--blue-light);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:800;flex-shrink:0}
   .avatar.green{background:var(--green-light);color:var(--green)}
   .card-body{flex:1;min-width:0}
-  .card-title{font-weight:700;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card-title{font-weight:800;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .card-meta{font-size:12.5px;color:var(--muted);margin-top:2px}
-  .chev{color:var(--blue);opacity:.5;font-size:20px;flex-shrink:0}
-  .count-badge{background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:700;
-    padding:3px 10px;border-radius:20px;flex-shrink:0}
+  .chev{color:var(--blue);opacity:.45;font-size:20px;flex-shrink:0}
+  .count-badge{background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:800;
+    padding:3px 11px;border-radius:20px;flex-shrink:0}
 
   .sec-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;
     font-size:22px;flex-shrink:0}
@@ -71,24 +75,26 @@
 
   .note-card{background:linear-gradient(135deg,#FFF8EE,#FFF3E0);border:1px solid #F3DDB8;border-radius:16px;
     padding:15px;margin-bottom:14px;cursor:pointer}
-  .note-card .nh{display:flex;align-items:center;gap:8px;font-weight:700;color:#B8772A;font-size:14px;margin-bottom:8px}
+  .note-card .nh{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--amber);font-size:14px;margin-bottom:8px}
   .note-card .nt{font-size:14.5px;color:var(--ink);white-space:pre-wrap;line-height:1.6}
   .note-card .nm{font-size:12px;color:var(--muted);margin-top:9px;border-top:1px dashed #E8D3A8;padding-top:8px}
 
-  .emerg-card{background:linear-gradient(135deg,#FCEBEB,#FBE0E0);border:1px solid #F3C0C0;border-radius:16px;
-    padding:14px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:12px}
-  .emerg-card .ei{width:44px;height:44px;border-radius:12px;background:#fff;color:var(--red);display:flex;
-    align-items:center;justify-content:center;font-size:23px;flex-shrink:0}
-  .emerg-card .et{font-weight:800;color:var(--red);font-size:15px}
-  .emerg-card .es{font-size:12px;color:#9c5252;margin-top:2px}
-  .emerg-pill{display:inline-block;background:#fff;border:1px solid #F3C0C0;color:var(--red);border-radius:9px;
-    padding:5px 10px;font-size:13px;font-weight:700;margin:0 0 7px 7px}
+  .info-card{border-radius:16px;padding:14px;margin-bottom:11px;cursor:pointer;display:flex;align-items:center;gap:12px}
+  .info-card .ii{width:46px;height:46px;border-radius:13px;background:#fff;display:flex;align-items:center;
+    justify-content:center;font-size:23px;flex-shrink:0}
+  .info-card .it{font-weight:800;font-size:15px}
+  .info-card .is{font-size:12px;margin-top:2px}
+  .ic-emerg{background:linear-gradient(135deg,#FCEBEB,#FBE0E0);border:1px solid #F3C0C0}
+  .ic-emerg .ii{color:var(--red)} .ic-emerg .it{color:var(--red)} .ic-emerg .is{color:#9c5252}
+  .ic-meds{background:linear-gradient(135deg,#E6F5EE,#DBF0E5);border:1px solid #BFE3D0}
+  .ic-meds .ii{color:var(--green)} .ic-meds .it{color:#1f7a50} .ic-meds .is{color:#4a8268}
+
   .emerg-block{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:11px}
-  .emerg-block .ebt{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:5px}
+  .emerg-block .ebt{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:5px}
   .emerg-block .ebv{font-size:14.5px;white-space:pre-wrap}
 
   .btn{background:var(--blue);color:#fff;border:none;border-radius:13px;padding:14px;font-size:15px;
-    font-weight:700;width:100%;cursor:pointer;transition:.15s;font-family:inherit}
+    font-weight:800;width:100%;cursor:pointer;transition:.15s;font-family:inherit}
   .btn:active{transform:scale(.98);background:var(--blue-dark)}
   .btn.green{background:var(--green)} .btn.ghost{background:var(--blue-light);color:var(--blue)}
   .btn.danger{background:var(--red-light);color:var(--red)}
@@ -104,38 +110,59 @@
   .doc-card:active{transform:scale(.98)}
   .doc-card img{width:100%;height:150px;object-fit:cover;background:var(--blue-light);display:block}
   .doc-card .di{padding:11px 13px}
-  .doc-card .dt{font-weight:700;font-size:14.5px}
+  .doc-card .dt{font-weight:800;font-size:14.5px}
   .doc-card .dd{font-size:12px;color:var(--muted);margin-top:3px;display:flex;justify-content:space-between}
-  .new-tag{background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+  .new-tag{background:var(--green);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px}
+
+  /* med rows */
+  .med-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px;box-shadow:var(--shadow);
+    margin-bottom:11px;display:flex;align-items:center;gap:12px}
+  .med-card .mi{width:44px;height:44px;border-radius:12px;background:var(--green-light);color:var(--green);
+    display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .med-card .mt{font-weight:800;font-size:15px}
+  .med-card .mm{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .time-pill{display:inline-block;background:var(--blue-light);color:var(--blue);border-radius:8px;
+    padding:2px 9px;font-size:12px;font-weight:800;margin:3px 0 0 5px;direction:ltr}
+  .switch{position:relative;width:46px;height:27px;flex-shrink:0;cursor:pointer}
+  .switch input{display:none}
+  .switch .sl{position:absolute;inset:0;background:var(--line);border-radius:20px;transition:.2s}
+  .switch .sl:before{content:"";position:absolute;width:21px;height:21px;border-radius:50%;background:#fff;
+    top:3px;right:3px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .switch input:checked + .sl{background:var(--green)}
+  .switch input:checked + .sl:before{transform:translateX(-19px)}
 
   .overlay{position:fixed;inset:0;background:rgba(20,33,51,.5);z-index:100;display:none;
     align-items:flex-end;justify-content:center}
   .overlay.show{display:flex}
+  .overlay.center{align-items:center;padding:20px}
   .sheet{background:#fff;width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:20px 18px 26px;
     max-height:92vh;overflow:auto;animation:slideUp .25s ease}
+  .overlay.center .sheet{border-radius:22px;max-width:380px;animation:pop .25s ease;text-align:center}
   @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
   .sheet h2{margin:0 0 4px;font-size:19px}
   .sheet .grab{width:40px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 14px}
-  label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:14px 0 6px}
+  label{display:block;font-size:13px;font-weight:800;color:var(--ink);margin:14px 0 6px}
   input,textarea,select{width:100%;padding:13px;border:1.5px solid var(--line);border-radius:12px;
     font-size:15px;font-family:inherit;background:var(--bg);color:var(--ink);outline:none}
   input:focus,textarea:focus,select:focus{border-color:var(--blue);background:#fff}
   textarea{resize:vertical;min-height:80px}
   .row2{display:flex;gap:10px}.row2>div{flex:1}
+  .hint{font-size:12.5px;color:var(--muted);text-align:center;margin:8px 0}
 
   .photo-pick{border:2px dashed var(--blue-soft);border-radius:14px;padding:24px;text-align:center;
-    color:var(--blue);cursor:pointer;background:var(--blue-light);font-weight:700;font-size:14px}
+    color:var(--blue);cursor:pointer;background:var(--blue-light);font-weight:800;font-size:14px}
   .photo-pick .pp-ic{font-size:34px;display:block;margin-bottom:6px}
   .photo-preview{width:100%;border-radius:14px;margin-top:10px;max-height:240px;object-fit:cover;display:block}
 
   .chips{display:flex;gap:8px;flex-wrap:wrap}
   .chip{padding:9px 14px;border-radius:11px;border:1.5px solid var(--line);background:var(--bg);
-    font-size:13px;font-weight:700;cursor:pointer;color:var(--muted)}
+    font-size:13px;font-weight:800;cursor:pointer;color:var(--muted)}
   .chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
 
   .full-img{width:100%;border-radius:14px;margin-bottom:14px;box-shadow:var(--shadow)}
   .detail-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
-  .detail-row .k{color:var(--muted)} .detail-row .v{font-weight:700}
+  .detail-row .k{color:var(--muted)} .detail-row .v{font-weight:800}
 
   .search{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:13px;background:#fff;
     font-size:14px;margin-bottom:14px;font-family:inherit}
@@ -144,16 +171,15 @@
   .spec-tile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 14px;
     box-shadow:var(--shadow);cursor:pointer;transition:.15s;text-align:center}
   .spec-tile:active{transform:scale(.97)}
-  .spec-tile .st-ic{width:50px;height:50px;border-radius:14px;background:var(--blue-light);color:var(--blue);
-    display:flex;align-items:center;justify-content:center;font-size:25px;margin:0 auto 9px}
-  .spec-tile .st-name{font-weight:700;font-size:14.5px}
+  .spec-tile .st-ic{width:52px;height:52px;border-radius:15px;background:var(--blue-light);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 9px}
+  .spec-tile .st-name{font-weight:800;font-size:14.5px}
   .spec-tile .st-count{font-size:11.5px;color:var(--muted);margin-top:3px}
   .add-tile{border:2px dashed var(--blue-soft);background:var(--blue-light);color:var(--blue);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;
     border-radius:16px;cursor:pointer;font-size:14px;min-height:118px}
   .add-tile .at-ic{font-size:30px;margin-bottom:4px}
 
-  /* lab table */
   .lab-table{width:100%;border-collapse:collapse;margin-top:6px;font-size:13.5px}
   .lab-table th{background:var(--blue-light);color:var(--blue);padding:8px 6px;font-size:12px;text-align:right}
   .lab-table td{border-bottom:1px solid var(--line);padding:7px 6px}
@@ -164,14 +190,34 @@
   .lr-row .lr-del{background:var(--red-light);color:var(--red);border:none;width:34px;height:34px;
     border-radius:9px;font-size:16px;cursor:pointer;flex-shrink:0}
   #ocrstatus{font-size:13px;color:var(--blue);background:var(--blue-light);padding:10px;border-radius:11px;
-    margin-top:10px;text-align:center;font-weight:700}
+    margin-top:10px;text-align:center;font-weight:800}
 
-  /* chart */
   .chart-box{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:14px}
   svg .grid-l{stroke:var(--line);stroke-width:1}
   svg .ln{fill:none;stroke:var(--blue);stroke-width:2.5}
   svg .dot{fill:var(--blue)}
   svg .lbl{fill:var(--muted);font-size:10px}
+
+  /* AUTH */
+  .auth{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:28px 22px;
+    background:var(--grad)}
+  .auth .top{text-align:center;color:#fff;margin-bottom:24px}
+  .auth .top .mk{width:74px;height:74px;border-radius:20px;background:rgba(255,255,255,.2);margin:0 auto 14px;
+    display:flex;align-items:center;justify-content:center;font-size:38px}
+  .auth .top h1{margin:0;font-size:27px;font-weight:800}
+  .auth .top p{margin:5px 0 0;opacity:.9;font-size:13.5px}
+  .auth-card{background:#fff;border-radius:22px;padding:22px 20px;box-shadow:var(--shadow-lg)}
+  .auth-card h2{margin:0 0 4px;font-size:19px}
+  .auth-card .lead{font-size:13px;color:var(--muted);margin:0 0 6px}
+  .auth-err{background:var(--red-light);color:var(--red);padding:10px;border-radius:11px;font-size:13px;
+    font-weight:700;margin-top:12px;text-align:center;display:none}
+  .auth-switch{text-align:center;margin-top:16px;color:#fff;font-size:13.5px}
+  .auth-switch a{color:#fff;font-weight:800;text-decoration:underline;cursor:pointer}
+
+  .remind-card .rc-ic{font-size:54px;margin-bottom:6px}
+  .remind-card h2{font-size:22px;color:var(--green)}
+  .remind-card .rc-dose{font-size:16px;font-weight:800;margin:6px 0}
+  .remind-card .rc-meta{color:var(--muted);font-size:13px;margin-bottom:18px}
 </style>
 </head>
 <body>
@@ -180,16 +226,63 @@
 <div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()">
   <div class="sheet" id="sheet"></div>
 </div>
+<div class="overlay center" id="remind"><div class="sheet remind-card" id="remindBox"></div></div>
 
 <script>
-/* ---------------- Data layer ---------------- */
-const KEY="instacare_v1";
-let _mem=null;
-let DB=load();
-function load(){
-  try{const raw=localStorage.getItem(KEY);return raw?JSON.parse(raw):{profiles:[]}}
-  catch(e){return _mem||{profiles:[]}}
+/* ================= AUTH (local lock) ================= */
+const AKEY="instacare_auth_v1"; let _authMem=null, _authed=false;
+function getAccount(){try{const r=localStorage.getItem(AKEY);return r?JSON.parse(r):_authMem}catch(e){return _authMem}}
+function setAccount(a){_authMem=a;try{localStorage.setItem(AKEY,JSON.stringify(a))}catch(e){}}
+function isAuthed(){return _authed}
+function randHex(n){const a=new Uint8Array(n);if(window.crypto&&crypto.getRandomValues)crypto.getRandomValues(a);else for(let i=0;i<n;i++)a[i]=Math.floor(Math.random()*256);return[...a].map(b=>b.toString(16).padStart(2,"0")).join("")}
+async function hashPwd(pw,salt){
+  const txt=salt+":"+pw;
+  try{const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(txt));
+    return[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("")}
+  catch(e){let h=0;for(let i=0;i<txt.length;i++)h=(h*31+txt.charCodeAt(i))>>>0;return"f"+h.toString(16)}
 }
+let _authMode="login"; // login | signup
+function viewSignup(){_authMode="signup";return authScreen(true)}
+function viewLogin(){_authMode="login";return authScreen(false)}
+function authScreen(signup){
+  return `<div class="auth">
+    <div class="top"><div class="mk">＋</div><h1>انستا كير</h1><p>كل تاريخك الطبي في مكان واحد</p></div>
+    <div class="auth-card">
+      <h2>${signup?"إنشاء حساب":"تسجيل الدخول"}</h2>
+      <p class="lead">${signup?"اعمل حساب يقفل بياناتك على جهازك":"أدخل إيميلك وكلمة السر"}</p>
+      <label>الإيميل</label><input id="a_email" type="email" inputmode="email" placeholder="example@mail.com" value="${esc((getAccount()||{}).email||'')}">
+      <label>كلمة السر</label><input id="a_pw" type="password" placeholder="••••••••">
+      ${signup?`<label>تأكيد كلمة السر</label><input id="a_pw2" type="password" placeholder="••••••••">`:""}
+      <div class="auth-err" id="a_err"></div>
+      <button class="btn" style="margin-top:18px" onclick="${signup?'doSignup()':'doLogin()'}">${signup?"إنشاء الحساب والدخول":"دخول"}</button>
+    </div>
+    <div class="auth-switch">${signup?`عندك حساب؟ <a onclick="renderAuth('login')">سجّل دخول</a>`:`أول مرة؟ <a onclick="renderAuth('signup')">اعمل حساب</a>`}</div>
+  </div>`;
+}
+function renderAuth(mode){document.getElementById("app").innerHTML=mode==="signup"?viewSignup():viewLogin()}
+function authErr(m){const e=document.getElementById("a_err");e.textContent=m;e.style.display="block"}
+const emailOk=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+async function doSignup(){
+  const email=val("a_email").trim().toLowerCase(),pw=val("a_pw"),pw2=val("a_pw2");
+  if(!emailOk(email))return authErr("اكتب إيميل صحيح");
+  if(pw.length<4)return authErr("كلمة السر لازم 4 حروف على الأقل");
+  if(pw!==pw2)return authErr("كلمتا السر مش متطابقتين");
+  const salt=randHex(8);const hash=await hashPwd(pw,salt);
+  setAccount({email,salt,hash});_authed=true;render();
+}
+async function doLogin(){
+  const acc=getAccount();const email=val("a_email").trim().toLowerCase(),pw=val("a_pw");
+  if(!acc)return renderAuth("signup");
+  if(email!==acc.email)return authErr("الإيميل غير مسجّل على الجهاز ده");
+  const hash=await hashPwd(pw,acc.salt);
+  if(hash!==acc.hash)return authErr("كلمة السر غلط");
+  _authed=true;render();
+}
+function logout(){if(!confirm("تسجيل خروج؟"))return;_authed=false;renderAuth("login")}
+
+/* ================= Data layer ================= */
+const KEY="instacare_v1"; let _mem=null; let DB=load();
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):{profiles:[]}}catch(e){return _mem||{profiles:[]}}}
 function save(){_mem=DB;try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 function uid(){return Math.random().toString(36).slice(2,10)}
 function today(){return new Date().toISOString().slice(0,10)}
@@ -205,18 +298,18 @@ const SECTIONS=[
 const SPEC_PRESETS=["قلب","عظام","أسنان","باطنة","جلدية","أنف وأذن","عيون","مسالك","نساء","أطفال","مخ وأعصاب","صدر"];
 const SPEC_ICON="🏥";
 
-let nav={view:"home", pid:null, sid:null, sec:null, docId:null, q:"", track:""};
+let nav={view:"home",pid:null,sid:null,sec:null,docId:null,q:"",track:""};
 function go(v,opts={}){nav={...nav,view:v,...opts};render();window.scrollTo(0,0)}
-
 const getP=()=>DB.profiles.find(p=>p.id===nav.pid);
 const getS=()=>{const p=getP();return p&&p.specs.find(s=>s.id===nav.sid)};
 
-/* ---------------- Render ---------------- */
+/* ================= Render ================= */
 function render(){
-  const app=document.getElementById("app");
+  if(!isAuthed()){document.getElementById("app").innerHTML=getAccount()?viewLogin():viewSignup();return;}
+  ensureReminders();
   const map={home:viewHome,profile:viewProfile,specialty:viewSpecialty,section:viewSection,
-    doc:viewDoc,emergency:viewEmergency,labtrack:viewLabTrack};
-  app.innerHTML=(map[nav.view]||viewHome)();
+    doc:viewDoc,emergency:viewEmergency,meds:viewMeds,labtrack:viewLabTrack};
+  document.getElementById("app").innerHTML=(map[nav.view]||viewHome)();
 }
 function header(title,sub,onBack){
   return `<header>
@@ -225,63 +318,56 @@ function header(title,sub,onBack){
   </header>`;
 }
 
-/* ---- HOME ---- */
 function viewHome(){
-  let cards = DB.profiles.length ? DB.profiles.map(p=>`
+  let cards=DB.profiles.length?DB.profiles.map(p=>`
     <div class="card" onclick="go('profile',{pid:'${p.id}',q:''})">
       <div class="avatar ${p.color||''}">${initial(p.name)}</div>
-      <div class="card-body">
-        <div class="card-title">${esc(p.name)}</div>
-        <div class="card-meta">${p.relation?esc(p.relation)+" • ":""}${p.specs.length} تخصص • ${countDocs(p)} وثيقة</div>
-      </div><div class="chev">‹</div>
-    </div>`).join("") : empty("👤","مفيش ملفات لسه","اعمل ملف ليك ولأفراد عيلتك");
+      <div class="card-body"><div class="card-title">${esc(p.name)}</div>
+      <div class="card-meta">${p.relation?esc(p.relation)+" • ":""}${p.specs.length} تخصص • ${countDocs(p)} وثيقة</div></div>
+      <div class="chev">‹</div></div>`).join(""):empty("👤","مفيش ملفات لسه","اعمل ملف ليك ولأفراد عيلتك");
   return `
   <div class="brand"><div class="mark">＋</div>
-    <div><h1>انستا كير</h1><p>كل تاريخك الطبي في مكان واحد</p></div></div>
-  <div class="container">
-    <div class="section-label"><span>الملفات الصحية</span></div>${cards}
-  </div>
+    <div style="flex:1"><h1>انستا كير</h1><p>كل تاريخك الطبي في مكان واحد</p></div>
+    <button class="logout" onclick="logout()">خروج</button></div>
+  <div class="container"><div class="section-label"><span>الملفات الصحية</span></div>${cards}</div>
   <button class="btn fab" onclick="sheetProfile()">＋ إضافة ملف جديد</button>`;
 }
 
-/* ---- PROFILE ---- */
 function viewProfile(){
   const p=getP(); if(!p)return go("home");
-  const e=p.emergency||{};
+  const e=p.emergency||{}, meds=p.meds||[];
   const hasE=e.blood||e.allergies||e.chronic||e.meds;
-  const emergCard=`<div class="emerg-card" onclick="go('emergency')">
-    <div class="ei">🚨</div>
-    <div style="flex:1"><div class="et">معلومات الطوارئ</div>
-      <div class="es">${hasE?(e.blood?"فصيلة "+esc(e.blood)+" • ":"")+ "اضغط للعرض/التعديل":"اضغط لإضافة فصيلة الدم والحساسية والأدوية"}</div></div>
-    <div class="chev" style="color:var(--red)">‹</div></div>`;
+  const activeMeds=meds.filter(m=>m.active!==false).length;
 
-  // search results mode
-  if(nav.q && nav.q.trim()){
+  if(nav.q&&nav.q.trim()){
     const res=searchDocs(p,nav.q.trim());
-    let body = res.length ? res.map(r=>`
+    let body=res.length?res.map(r=>`
       <div class="card" onclick="go('doc',{sid:'${r.sid}',sec:'${r.sec}',docId:'${r.doc.id}'})">
         <div class="sec-icon ${SECTIONS.find(x=>x.id===r.sec).cls}">${SECTIONS.find(x=>x.id===r.sec).icon}</div>
         <div class="card-body"><div class="card-title">${esc(r.doc.title)}</div>
         <div class="card-meta">${esc(r.specName)} • ${fmtDate(r.doc.date)}</div></div>
-        <div class="chev">‹</div></div>`).join("") : empty("🔍","مفيش نتائج","جرّب كلمة تانية");
+        <div class="chev">‹</div></div>`).join(""):empty("🔍","مفيش نتائج","جرّب كلمة تانية");
     return header(p.name,"بحث","go('profile',{q:''})")+`
     <div class="container">
-      <input class="search" id="q" value="${esc(nav.q)}" oninput="liveSearch(this.value)" placeholder="🔍 ابحث في الوثائق..." autofocus>
-      ${body}
+      <input class="search" id="q" value="${esc(nav.q)}" oninput="liveSearch(this.value)" placeholder="🔍 ابحث في الوثائق..." autofocus>${body}
     </div>`;
   }
 
   let tiles=p.specs.map(s=>`
     <div class="spec-tile" onclick="go('specialty',{sid:'${s.id}'})">
-      <div class="st-ic">${SPEC_ICON}</div>
-      <div class="st-name">${esc(s.name)}</div>
+      <div class="st-ic">${SPEC_ICON}</div><div class="st-name">${esc(s.name)}</div>
       <div class="st-count">${specCount(s)} وثيقة</div></div>`).join("");
   tiles+=`<div class="add-tile" onclick="sheetSpec()"><div class="at-ic">＋</div>إضافة تخصص</div>`;
 
   return header(p.name,(p.relation||"")+(p.birth?" • "+p.birth:""),"go('home')")+`
   <div class="container">
     <input class="search" oninput="if(event.target.value)go('profile',{q:event.target.value})" placeholder="🔍 ابحث في كل الوثائق...">
-    ${emergCard}
+    <div class="info-card ic-emerg" onclick="go('emergency')">
+      <div class="ii">🚨</div><div style="flex:1"><div class="it">معلومات الطوارئ</div>
+      <div class="is">${hasE?(e.blood?"فصيلة "+esc(e.blood)+" • ":"")+"اضغط للعرض":"فصيلة الدم، الحساسية، الأدوية"}</div></div><div class="chev" style="color:var(--red)">‹</div></div>
+    <div class="info-card ic-meds" onclick="go('meds')">
+      <div class="ii">💊</div><div style="flex:1"><div class="it">الأدوية والتذكير</div>
+      <div class="is">${meds.length?activeMeds+" دوا مفعّل للتذكير":"ضيف أدوية واضبط منبّه مواعيدها"}</div></div><div class="chev" style="color:var(--green)">‹</div></div>
     <div class="section-label"><span>التخصصات</span></div>
     <div class="grid-spec">${tiles}</div>
     <div style="margin-top:18px"><button class="btn ghost" onclick="sheetProfile('${p.id}')">✎ تعديل بيانات الملف</button></div>
@@ -291,19 +377,18 @@ function liveSearch(v){go('profile',{q:v});const i=document.getElementById('q');
 
 /* ---- EMERGENCY ---- */
 function viewEmergency(){
-  const p=getP(); if(!p)return go("home");
-  const e=p.emergency||{};
+  const p=getP(); if(!p)return go("home"); const e=p.emergency||{};
   const block=(t,v,ic)=>`<div class="emerg-block"><div class="ebt">${ic} ${t}</div><div class="ebv">${v?esc(v):'<span style="color:var(--muted)">—</span>'}</div></div>`;
   return header("🚨 معلومات الطوارئ",p.name,"go('profile')")+`
   <div class="container">
     <div class="emerg-block" style="background:var(--red);border:none;color:#fff">
-      <div style="font-size:12px;opacity:.85;font-weight:700">فصيلة الدم</div>
+      <div style="font-size:12px;opacity:.85;font-weight:800">فصيلة الدم</div>
       <div style="font-size:30px;font-weight:800">${e.blood?esc(e.blood):"—"}</div></div>
     ${block("الحساسية (أدوية/أطعمة)",e.allergies,"⚠️")}
     ${block("أمراض مزمنة",e.chronic,"🩺")}
     ${block("أدوية حالية",e.meds,"💊")}
     <button class="btn" style="margin-top:8px" onclick="sheetEmergency()">✎ تعديل معلومات الطوارئ</button>
-    <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:14px">دي المعلومات اللي لازم أي حد يشوفها بسرعة في حالة طارئة</p>
+    <p class="hint" style="margin-top:14px">دي المعلومات اللي لازم أي حد يشوفها بسرعة في حالة طارئة</p>
   </div>`;
 }
 function sheetEmergency(){
@@ -320,72 +405,132 @@ function sheetEmergency(){
 function pickBlood(el,b){document.querySelectorAll('#bloodchips .chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');document.getElementById('e_blood').value=b}
 function saveEmergency(){getP().emergency={blood:val('e_blood'),allergies:val('e_all').trim(),chronic:val('e_chr').trim(),meds:val('e_med').trim()};save();closeSheet();render()}
 
-/* ---- SPECIALTY ---- */
+/* ---- MEDICATIONS ---- */
+function viewMeds(){
+  const p=getP(); if(!p)return go("home"); const meds=p.meds||[];
+  const perm=("Notification"in window)?Notification.permission:"unsupported";
+  let permBar = perm==="granted"
+    ? `<div class="emerg-block" style="background:var(--green-light);border-color:#BFE3D0;color:#1f7a50;font-weight:700;text-align:center">✅ التنبيهات مفعّلة على الجهاز ده</div>`
+    : `<button class="btn ghost sm" onclick="askNotif()">🔔 تفعيل التنبيهات (مهم عشان التذكير يشتغل)</button>`;
+  let list=meds.length?meds.map(m=>`
+    <div class="med-card">
+      <div class="mi">💊</div>
+      <div style="flex:1;min-width:0" onclick="sheetMed('${m.id}')">
+        <div class="mt">${esc(m.name)}</div>
+        <div class="mm">${m.dose?esc(m.dose):""}${(m.times||[]).map(t=>`<span class="time-pill">${t}</span>`).join("")||'<span class="time-pill" style="background:var(--red-light);color:var(--red)">مفيش مواعيد</span>'}</div>
+      </div>
+      <label class="switch"><input type="checkbox" ${m.active!==false?"checked":""} onchange="toggleMed('${m.id}',this.checked)"><span class="sl"></span></label>
+    </div>`).join(""):empty("💊","مفيش أدوية","ضيف دوا واضبط مواعيده");
+  return header("💊 الأدوية والتذكير",p.name,"go('profile')")+`
+  <div class="container">
+    ${permBar}
+    <div class="section-label" style="margin-top:14px"><span>الأدوية</span></div>
+    ${list}
+    <p class="hint">⚠️ التذكير بيشتغل والتطبيق مفتوح أو في الخلفية. للمنبّه وقت الموبايل مقفول محتاجين نسخة Native.</p>
+  </div>
+  <button class="btn fab green" onclick="sheetMed()">＋ إضافة دوا</button>`;
+}
+function toggleMed(id,on){const m=(getP().meds||[]).find(x=>x.id===id);if(m){m.active=on;save()}}
+let _times=[];
+function sheetMed(id){
+  const meds=getP().meds||[]; let m=id?meds.find(x=>x.id===id):null;
+  _times=m?(m.times||[]).slice():["08:00"];
+  openSheet(`<h2>${m?"تعديل دوا":"دوا جديد"}</h2>
+    <label>اسم الدوا</label><input id="m_name" value="${m?esc(m.name):""}" placeholder="مثلاً: كونكور">
+    <label>الجرعة</label><input id="m_dose" value="${m?esc(m.dose||""):""}" placeholder="مثلاً: قرص 5 مج">
+    <label>مواعيد التذكير</label>
+    <div id="timewrap">${renderTimes()}</div>
+    <button class="btn ghost sm" onclick="addTime()">＋ إضافة موعد</button>
+    <label style="margin-top:14px">ملاحظات</label><textarea id="m_note" placeholder="مثلاً: بعد الأكل">${m?esc(m.note||""):""}</textarea>
+    <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn green" onclick="saveMed('${id||""}')">حفظ</button>
+      ${m?`<button class="btn danger" onclick="delMed('${id}')">حذف الدوا</button>`:""}</div>`);
+}
+function renderTimes(){
+  if(!_times.length)return `<p class="hint">مفيش مواعيد — اضغط "إضافة موعد"</p>`;
+  return _times.map((t,i)=>`<div class="lr-row"><input type="time" class="tm" data-i="${i}" value="${t}" style="direction:ltr;text-align:center">
+    <button class="lr-del" onclick="removeTime(${i})">✕</button></div>`).join("");
+}
+function readTimes(){document.querySelectorAll('.tm').forEach(inp=>{const i=+inp.dataset.i;if(_times[i]!==undefined)_times[i]=inp.value})}
+function refreshTimes(){document.getElementById('timewrap').innerHTML=renderTimes()}
+function addTime(){readTimes();_times.push("12:00");refreshTimes()}
+function removeTime(i){readTimes();_times.splice(i,1);refreshTimes()}
+function saveMed(id){
+  const name=val("m_name").trim(); if(!name)return alert("اكتب اسم الدوا");
+  readTimes(); const times=_times.filter(Boolean);
+  const p=getP(); if(!p.meds)p.meds=[];
+  const data={name,dose:val("m_dose").trim(),note:val("m_note").trim(),times,active:true};
+  if(id){const m=p.meds.find(x=>x.id===id);data.active=m.active!==false;Object.assign(m,data);}
+  else p.meds.push({id:uid(),...data});
+  save();closeSheet();render();
+}
+function delMed(id){if(!confirm("حذف الدوا؟"))return;const p=getP();p.meds=p.meds.filter(x=>x.id!==id);save();closeSheet();render()}
+function askNotif(){if(!("Notification"in window))return alert("المتصفح ده مش بيدعم التنبيهات");Notification.requestPermission().then(()=>render())}
+
+/* ---- reminder loop ---- */
+let _remTimer=null,_fired={};
+function ensureReminders(){if(_remTimer)return;_remTimer=setInterval(checkReminders,20000);checkReminders()}
+function checkReminders(){
+  const d=new Date(),now=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"),day=today();
+  DB.profiles.forEach(p=>(p.meds||[]).forEach(m=>{if(m.active===false)return;
+    (m.times||[]).forEach(t=>{if(t===now){const k=day+"|"+p.id+"|"+m.id+"|"+t;if(!_fired[k]){_fired[k]=1;fireReminder(p,m,t)}}})}));
+}
+function fireReminder(p,m,t){
+  try{if(navigator.vibrate)navigator.vibrate([400,150,400,150,400])}catch(e){}
+  try{if("Notification"in window&&Notification.permission==="granted")
+    new Notification("💊 وقت الدوا: "+m.name,{body:(m.dose?m.dose+" • ":"")+p.name+" • "+t,icon:"icon.svg",tag:m.id+t})}catch(e){}
+  const box=document.getElementById("remindBox");
+  box.innerHTML=`<div class="rc-ic">💊</div><h2>وقت الدوا!</h2>
+    <div class="rc-dose">${esc(m.name)}${m.dose?" — "+esc(m.dose):""}</div>
+    <div class="rc-meta">${esc(p.name)} • الساعة ${t}${m.note?" • "+esc(m.note):""}</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn green" onclick="closeRemind()">خدته ✅</button>
+      <button class="btn ghost" onclick="closeRemind()">تأجيل</button></div>`;
+  document.getElementById("remind").classList.add("show");
+}
+function closeRemind(){document.getElementById("remind").classList.remove("show")}
+
+/* ---- SPECIALTY / SECTION / DOC / LAB (as before) ---- */
 function viewSpecialty(){
   const p=getP(),s=getS(); if(!s)return go("profile");
   let rows=SECTIONS.map(sec=>{
-    if(sec.id==="note"){
-      const n=s.note;
-      return `<div class="card" onclick="sheetNote()">
-        <div class="sec-icon ${sec.cls}">${sec.icon}</div>
+    if(sec.id==="note"){const n=s.note;
+      return `<div class="card" onclick="sheetNote()"><div class="sec-icon ${sec.cls}">${sec.icon}</div>
         <div class="card-body"><div class="card-title">${sec.name}</div>
-        <div class="card-meta">${n&&n.text?esc(truncate(n.text,40)):"اضغط لإضافة ملاحظة"}</div></div>
-        <div class="chev">‹</div></div>`;
-    }
+        <div class="card-meta">${n&&n.text?esc(truncate(n.text,40)):"اضغط لإضافة ملاحظة"}</div></div><div class="chev">‹</div></div>`;}
     const cnt=(s.docs[sec.id]||[]).length;
-    return `<div class="card" onclick="go('section',{sec:'${sec.id}'})">
-      <div class="sec-icon ${sec.cls}">${sec.icon}</div>
-      <div class="card-body"><div class="card-title">${sec.name}</div>
-      <div class="card-meta">${cnt} وثيقة</div></div>
+    return `<div class="card" onclick="go('section',{sec:'${sec.id}'})"><div class="sec-icon ${sec.cls}">${sec.icon}</div>
+      <div class="card-body"><div class="card-title">${sec.name}</div><div class="card-meta">${cnt} وثيقة</div></div>
       <span class="count-badge">${cnt}</span></div>`;
   }).join("");
-
   let noteBox="";
-  if(s.note&&s.note.text){
-    noteBox=`<div class="note-card" onclick="sheetNote()">
-      <div class="nh">📝 آخر ملاحظة من الدكتور</div>
-      <div class="nt">${esc(s.note.text)}</div>
-      <div class="nm">${s.note.doctor?"د. "+esc(s.note.doctor)+" • ":""}${fmtDate(s.note.date)||""}${s.note.next?" • الجاية: "+esc(s.note.next):""}</div></div>`;
-  }
-  return header(s.name,p.name,"go('profile')")+`
-  <div class="container">${noteBox}
+  if(s.note&&s.note.text)noteBox=`<div class="note-card" onclick="sheetNote()"><div class="nh">📝 آخر ملاحظة من الدكتور</div>
+    <div class="nt">${esc(s.note.text)}</div><div class="nm">${s.note.doctor?"د. "+esc(s.note.doctor)+" • ":""}${fmtDate(s.note.date)||""}${s.note.next?" • الجاية: "+esc(s.note.next):""}</div></div>`;
+  return header(s.name,p.name,"go('profile')")+`<div class="container">${noteBox}
     <div class="section-label"><span>الأقسام</span></div>${rows}
-    <div style="margin-top:14px"><button class="btn danger" onclick="delSpec()">🗑 حذف التخصص</button></div>
-  </div>`;
+    <div style="margin-top:14px"><button class="btn danger" onclick="delSpec()">🗑 حذف التخصص</button></div></div>`;
 }
-
-/* ---- SECTION ---- */
 function viewSection(){
   const p=getP(),s=getS(); if(!s)return go("profile");
   const sec=SECTIONS.find(x=>x.id===nav.sec);
   let docs=(s.docs[nav.sec]||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
   const newest=docs[0]&&docs[0].id;
-  let body = docs.length ? docs.map(d=>`
-    <div class="doc-card" onclick="go('doc',{docId:'${d.id}'})">
+  let body=docs.length?docs.map(d=>`<div class="doc-card" onclick="go('doc',{docId:'${d.id}'})">
       ${d.img?`<img src="${d.img}" alt="">`:`<div style="height:90px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:34px">📄</div>`}
       <div class="di"><div class="dt">${esc(d.title)} ${d.id===newest?'<span class="new-tag">جديد</span>':''}</div>
-      <div class="dd"><span>${fmtDate(d.date)}</span>${d.labRows&&d.labRows.length?'<span>🔬 '+d.labRows.length+' نتيجة</span>':(d.note?'<span>📝</span>':'')}</div></div>
-    </div>`).join("") : empty(sec.icon,"مفيش وثائق هنا","صوّر أو ارفع أول وثيقة");
-
-  const trackBtn = nav.sec==="lab" ? `<button class="btn ghost" style="margin-bottom:14px" onclick="go('labtrack',{track:''})">📈 متابعة الأرقام (رسم بياني)</button>` : "";
-  return header(sec.name,`${p.name} • ${s.name}`,"go('specialty')")+`
-  <div class="container">${trackBtn}${body}</div>
+      <div class="dd"><span>${fmtDate(d.date)}</span>${d.labRows&&d.labRows.length?'<span>🔬 '+d.labRows.length+' نتيجة</span>':(d.note?'<span>📝</span>':'')}</div></div></div>`).join(""):empty(sec.icon,"مفيش وثائق هنا","صوّر أو ارفع أول وثيقة");
+  const trackBtn=nav.sec==="lab"?`<button class="btn ghost" style="margin-bottom:14px" onclick="go('labtrack',{track:''})">📈 متابعة الأرقام (رسم بياني)</button>`:"";
+  return header(sec.name,`${p.name} • ${s.name}`,"go('specialty')")+`<div class="container">${trackBtn}${body}</div>
   <button class="btn fab" onclick="sheetDoc()">📷 إضافة / تصوير وثيقة</button>`;
 }
-
-/* ---- DOC ---- */
 function viewDoc(){
   const p=getP(),s=getS(); if(!s)return go("profile");
   const d=(s.docs[nav.sec]||[]).find(x=>x.id===nav.docId); if(!d)return go("section");
   let labTable="";
-  if(d.labRows&&d.labRows.length){
-    labTable=`<div style="margin-top:16px"><div class="section-label">🔬 نتائج التحاليل</div>
-      <table class="lab-table"><tr><th>التحليل</th><th>القيمة</th><th>الوحدة</th><th>المعدل</th></tr>
-      ${d.labRows.map(r=>`<tr class="${isOut(r)?'out':''}"><td>${esc(r.name)}</td><td><b>${esc(r.value)}</b></td><td>${esc(r.unit||'')}</td><td>${esc(r.ref||'')}</td></tr>`).join("")}
-      </table></div>`;
-  }
-  return header(d.title,SECTIONS.find(x=>x.id===nav.sec).name,"go('section')")+`
-  <div class="container">
+  if(d.labRows&&d.labRows.length)labTable=`<div style="margin-top:16px"><div class="section-label">🔬 نتائج التحاليل</div>
+    <table class="lab-table"><tr><th>التحليل</th><th>القيمة</th><th>الوحدة</th><th>المعدل</th></tr>
+    ${d.labRows.map(r=>`<tr class="${isOut(r)?'out':''}"><td>${esc(r.name)}</td><td><b>${esc(r.value)}</b></td><td>${esc(r.unit||'')}</td><td>${esc(r.ref||'')}</td></tr>`).join("")}</table></div>`;
+  return header(d.title,SECTIONS.find(x=>x.id===nav.sec).name,"go('section')")+`<div class="container">
     ${d.img?`<img class="full-img" src="${d.img}">`:`<div class="full-img" style="height:160px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:50px">📄</div>`}
     <div class="detail-row"><span class="k">التاريخ</span><span class="v">${fmtDate(d.date)}</span></div>
     ${d.doctor?`<div class="detail-row"><span class="k">الدكتور / المكان</span><span class="v">${esc(d.doctor)}</span></div>`:""}
@@ -393,39 +538,26 @@ function viewDoc(){
     ${d.note?`<div style="margin-top:14px"><div class="section-label">ملاحظات</div><div style="background:#fff;padding:14px;border-radius:13px;border:1px solid var(--line);white-space:pre-wrap;font-size:14.5px">${esc(d.note)}</div></div>`:""}
     <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px">
       <button class="btn ghost" onclick="sheetDoc('${d.id}')">✎ تعديل</button>
-      <button class="btn danger" onclick="delDoc('${d.id}')">🗑 حذف الوثيقة</button>
-    </div>
-  </div>`;
+      <button class="btn danger" onclick="delDoc('${d.id}')">🗑 حذف الوثيقة</button></div></div>`;
 }
-
-/* ---- LAB TRACK (chart) ---- */
 function viewLabTrack(){
   const p=getP(),s=getS(); if(!s)return go("profile");
   const docs=(s.docs.lab||[]);
   const names=[...new Set([].concat(...docs.map(d=>(d.labRows||[]).map(r=>r.name.trim()))).filter(Boolean))];
-  if(!names.length){
-    return header("📈 متابعة الأرقام",s.name,"go('section',{sec:'lab'})")+`<div class="container">${empty("📈","مفيش أرقام تحاليل","ضيف تحليل وحط نتايجه الأول")}</div>`;
-  }
+  if(!names.length)return header("📈 متابعة الأرقام",s.name,"go('section',{sec:'lab'})")+`<div class="container">${empty("📈","مفيش أرقام تحاليل","ضيف تحليل وحط نتايجه الأول")}</div>`;
   const sel=nav.track&&names.includes(nav.track)?nav.track:names[0];
   let points=[];
-  docs.forEach(d=>{(d.labRows||[]).forEach(r=>{if(r.name.trim()===sel){const v=parseFloat(String(r.value).replace(/[^\d.\-]/g,''));if(!isNaN(v)&&d.date)points.push({date:d.date,value:v})}})});
+  docs.forEach(d=>(d.labRows||[]).forEach(r=>{if(r.name.trim()===sel){const v=parseFloat(String(r.value).replace(/[^\d.\-]/g,''));if(!isNaN(v)&&d.date)points.push({date:d.date,value:v})}}));
   points.sort((a,b)=>a.date.localeCompare(b.date));
-  const options=names.map(n=>`<option value="${esc(n)}" ${n===sel?'selected':''}>${esc(n)}</option>`).join("");
-  return header("📈 متابعة الأرقام",s.name,"go('section',{sec:'lab'})")+`
-  <div class="container">
-    <label>اختر التحليل</label>
-    <select onchange="go('labtrack',{track:this.value})">${options}</select>
+  return header("📈 متابعة الأرقام",s.name,"go('section',{sec:'lab'})")+`<div class="container">
+    <label>اختر التحليل</label><select onchange="go('labtrack',{track:this.value})">${names.map(n=>`<option value="${esc(n)}" ${n===sel?'selected':''}>${esc(n)}</option>`).join("")}</select>
     <div class="chart-box" style="margin-top:14px">${lineChart(points)}</div>
-    ${points.length?`<table class="lab-table"><tr><th>التاريخ</th><th>القيمة</th></tr>
-      ${points.slice().reverse().map(pt=>`<tr><td>${fmtDate(pt.date)}</td><td><b>${pt.value}</b></td></tr>`).join("")}</table>`:""}
-  </div>`;
+    ${points.length?`<table class="lab-table"><tr><th>التاريخ</th><th>القيمة</th></tr>${points.slice().reverse().map(pt=>`<tr><td>${fmtDate(pt.date)}</td><td><b>${pt.value}</b></td></tr>`).join("")}</table>`:""}</div>`;
 }
 function lineChart(points){
   if(!points.length)return empty("📊","مفيش قراءات","");
-  const W=420,H=190,pad=34,n=points.length;
-  const vals=points.map(p=>p.value),min=Math.min(...vals),max=Math.max(...vals),range=(max-min)||1;
-  const X=i=>pad+(n===1?(W-2*pad)/2:i*(W-2*pad)/(n-1));
-  const Y=v=>H-pad-((v-min)/range)*(H-2*pad);
+  const W=420,H=190,pad=34,n=points.length,vals=points.map(p=>p.value),min=Math.min(...vals),max=Math.max(...vals),range=(max-min)||1;
+  const X=i=>pad+(n===1?(W-2*pad)/2:i*(W-2*pad)/(n-1)),Y=v=>H-pad-((v-min)/range)*(H-2*pad);
   const pts=points.map((p,i)=>`${X(i)},${Y(p.value)}`).join(" ");
   const dots=points.map((p,i)=>`<circle class="dot" cx="${X(i)}" cy="${Y(p.value)}" r="4"></circle>
     <text class="lbl" x="${X(i)}" y="${Y(p.value)-9}" text-anchor="middle">${p.value}</text>
@@ -434,7 +566,7 @@ function lineChart(points){
   return `<svg viewBox="0 0 ${W} ${H}" width="100%">${grid}<polyline class="ln" points="${pts}"></polyline>${dots}</svg>`;
 }
 
-/* ---------------- Sheets ---------------- */
+/* ================= Sheets ================= */
 function openSheet(html){document.getElementById("sheet").innerHTML=`<div class="grab"></div>`+html;document.getElementById("overlay").classList.add("show")}
 function closeSheet(){document.getElementById("overlay").classList.remove("show")}
 
@@ -452,7 +584,7 @@ function saveProfile(id){
   const name=val("f_name").trim(); if(!name)return alert("اكتب الاسم");
   const rel=val("f_rel").trim(),birth=val("f_birth");
   if(id){const p=DB.profiles.find(x=>x.id===id);p.name=name;p.relation=rel;p.birth=birth;}
-  else DB.profiles.push({id:uid(),name,relation:rel,birth,color:DB.profiles.length%2?"green":"",specs:[],emergency:{}});
+  else DB.profiles.push({id:uid(),name,relation:rel,birth,color:DB.profiles.length%2?"green":"",specs:[],emergency:{},meds:[]});
   save();closeSheet();render();
 }
 function delProfile(id){if(!confirm("حذف الملف وكل وثائقه؟"))return;DB.profiles=DB.profiles.filter(x=>x.id!==id);save();closeSheet();go("home")}
@@ -481,11 +613,9 @@ function sheetNote(){
 function saveNote(){const text=val("n_text").trim();if(!text)return alert("اكتب الملاحظة");getS().note={text,doctor:val("n_doc").trim(),date:val("n_date"),next:val("n_next").trim()};save();closeSheet();render()}
 function clearNote(){getS().note=null;save();closeSheet();render()}
 
-/* document form (+ lab editor + OCR) */
 let _img=null,_labRows=[];
 function sheetDoc(id){
-  const s=getS(); _img=null;_labRows=[];
-  let d=null;
+  const s=getS(); _img=null;_labRows=[]; let d=null;
   if(id){d=(s.docs[nav.sec]||[]).find(x=>x.id===id);_img=d.img||null;_labRows=(d.labRows||[]).map(r=>({...r}));}
   const isLab=nav.sec==="lab";
   openSheet(`<h2>${d?"تعديل وثيقة":"وثيقة جديدة"}</h2>
@@ -495,18 +625,16 @@ function sheetDoc(id){
     <label>عنوان الوثيقة</label><input id="d_title" value="${d?esc(d.title):""}" placeholder="${isLab?'مثلاً: صورة دم كاملة':'مثلاً: صورة رنين'}">
     <div class="row2"><div><label>التاريخ</label><input id="d_date" type="date" value="${d?d.date:today()}"></div>
     <div><label>الدكتور / المكان</label><input id="d_doc" value="${d?esc(d.doctor||""):""}" placeholder="اختياري"></div></div>
-    ${isLab?`
-      <label style="margin-top:18px">🔬 نتائج التحاليل</label>
+    ${isLab?`<label style="margin-top:18px">🔬 نتائج التحاليل</label>
       <button class="btn ghost sm" onclick="runOCR()">✨ اقرأ الأرقام من الصورة تلقائيًا</button>
       <div id="ocrstatus" style="display:none"></div>
       <div id="labwrap" style="margin-top:10px">${renderLabEditor()}</div>
-      <button class="btn ghost sm" style="margin-top:4px" onclick="addLabRow()">＋ إضافة صف</button>
-    `:""}
+      <button class="btn ghost sm" style="margin-top:4px" onclick="addLabRow()">＋ إضافة صف</button>`:""}
     <label style="margin-top:18px">ملاحظات</label><textarea id="d_note" placeholder="اختياري">${d?esc(d.note||""):""}</textarea>
     <button class="btn" style="margin-top:20px" onclick="saveDoc('${id||""}')">حفظ الوثيقة</button>`);
 }
 function renderLabEditor(){
-  if(!_labRows.length)return `<p style="font-size:12.5px;color:var(--muted);text-align:center;margin:8px 0">مفيش صفوف — اضغط "اقرأ تلقائيًا" أو "إضافة صف"</p>`;
+  if(!_labRows.length)return `<p class="hint">مفيش صفوف — اضغط "اقرأ تلقائيًا" أو "إضافة صف"</p>`;
   return _labRows.map((r,i)=>`<div class="lr-row">
     <input class="lr lr-name" data-i="${i}" data-k="name" value="${esc(r.name)}" placeholder="التحليل">
     <input class="lr lr-val" data-i="${i}" data-k="value" value="${esc(r.value)}" placeholder="القيمة">
@@ -518,15 +646,12 @@ function readLabInputs(){document.querySelectorAll('.lr').forEach(inp=>{const i=
 function refreshLab(){document.getElementById('labwrap').innerHTML=renderLabEditor()}
 function addLabRow(){readLabInputs();_labRows.push({name:"",value:"",unit:"",ref:""});refreshLab()}
 function removeLabRow(i){readLabInputs();_labRows.splice(i,1);refreshLab()}
-
 function onPhoto(e){
-  const file=e.target.files[0]; if(!file)return;
-  const r=new FileReader();
+  const file=e.target.files[0]; if(!file)return; const r=new FileReader();
   r.onload=ev=>{const img=new Image();img.onload=()=>{
     const max=1100,sc=Math.min(1,max/Math.max(img.width,img.height));
     const c=document.createElement("canvas");c.width=img.width*sc;c.height=img.height*sc;
-    c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-    _img=c.toDataURL("image/jpeg",.7);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);_img=c.toDataURL("image/jpeg",.7);
     const pv=document.getElementById("prev");pv.src=_img;pv.style.display="block";
   };img.src=ev.target.result;};r.readAsDataURL(file);
 }
@@ -542,19 +667,14 @@ function saveDoc(id){
 }
 function delDoc(id){if(!confirm("حذف الوثيقة؟"))return;const s=getS();s.docs[nav.sec]=s.docs[nav.sec].filter(x=>x.id!==id);save();go("section")}
 
-/* ---- OCR via Tesseract.js (lazy load) ---- */
-function loadTesseract(){return new Promise((res,rej)=>{
-  if(window.Tesseract)return res();
-  const sc=document.createElement("script");
-  sc.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
-  sc.onload=res;sc.onerror=()=>rej(new Error("load"));document.head.appendChild(sc);
-})}
+function loadTesseract(){return new Promise((res,rej)=>{if(window.Tesseract)return res();
+  const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+  sc.onload=res;sc.onerror=()=>rej(new Error("load"));document.head.appendChild(sc);})}
 async function runOCR(){
   if(!_img)return alert("صوّر أو اختار صورة التحليل الأول");
   const st=document.getElementById("ocrstatus");st.style.display="block";st.textContent="⏳ بحمّل محرّك القراءة...";
   try{
-    await loadTesseract();
-    st.textContent="🔍 بقرأ الصورة... (ممكن تاخد شوية)";
+    await loadTesseract();st.textContent="🔍 بقرأ الصورة... (ممكن تاخد شوية)";
     const {data}=await Tesseract.recognize(_img,"eng",{logger:m=>{if(m.status==="recognizing text")st.textContent="🔍 بقرأ... "+Math.round(m.progress*100)+"%"}});
     const rows=parseLab(data.text||"");
     if(!rows.length){st.textContent="معرفتش أطلّع أرقام واضحة — ضيفها يدوي 🙏";return}
@@ -564,37 +684,29 @@ async function runOCR(){
 }
 function parseLab(text){
   const rows=[];
-  text.split(/\n/).forEach(line=>{
-    line=line.replace(/\s+/g," ").trim(); if(line.length<3)return;
+  text.split(/\n/).forEach(line=>{line=line.replace(/\s+/g," ").trim();if(line.length<3)return;
     const m=line.match(/^(.+?)\s*[:\-]?\s*(-?\d+(?:[.,]\d+)?)\s*([a-zA-Z%µ\/]+(?:\/[a-zA-Z]+)?)?\b/);
-    if(m&&/[a-zA-Z؀-ۿ]/.test(m[1])&&m[1].trim().length>=2){
-      rows.push({name:m[1].trim().replace(/[._]+$/,""),value:m[2].replace(",","."),unit:(m[3]||"").trim(),ref:""});
-    }
-  });
+    if(m&&/[a-zA-Z؀-ۿ]/.test(m[1])&&m[1].trim().length>=2)rows.push({name:m[1].trim().replace(/[._]+$/,""),value:m[2].replace(",","."),unit:(m[3]||"").trim(),ref:""});});
   return rows.slice(0,40);
 }
 
-/* ---------------- utils ---------------- */
+/* ================= utils ================= */
 function val(id){const e=document.getElementById(id);return e?e.value:""}
 function esc(s){return(s==null?"":""+s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function initial(n){return(n||"؟").trim()[0]||"؟"}
 function truncate(s,n){return s.length>n?s.slice(0,n)+"…":s}
-function empty(ic,t,sub){return `<div class="empty"><div class="e-ic">${ic}</div><p style="font-weight:700;color:var(--ink)">${t}</p>${sub?`<p>${sub}</p>`:""}</div>`}
+function empty(ic,t,sub){return `<div class="empty"><div class="e-ic">${ic}</div><p style="font-weight:800;color:var(--ink)">${t}</p>${sub?`<p>${sub}</p>`:""}</div>`}
 function countDocs(p){let c=0;p.specs.forEach(s=>c+=specCount(s));return c}
 function specCount(s){let c=0;Object.values(s.docs||{}).forEach(a=>c+=a.length);return c}
-function isOut(r){ // is value outside ref range like "10-20"
-  const v=parseFloat(String(r.value).replace(/[^\d.\-]/g,""));const m=String(r.ref||"").match(/(-?\d+(?:\.\d+)?)\s*[-–]\s*(-?\d+(?:\.\d+)?)/);
-  if(isNaN(v)||!m)return false;return v<parseFloat(m[1])||v>parseFloat(m[2]);
-}
-function searchDocs(p,q){
-  q=q.toLowerCase();const out=[];
-  p.specs.forEach(s=>{Object.keys(s.docs||{}).forEach(sec=>{(s.docs[sec]||[]).forEach(d=>{
+function isOut(r){const v=parseFloat(String(r.value).replace(/[^\d.\-]/g,""));const m=String(r.ref||"").match(/(-?\d+(?:\.\d+)?)\s*[-–]\s*(-?\d+(?:\.\d+)?)/);if(isNaN(v)||!m)return false;return v<parseFloat(m[1])||v>parseFloat(m[2])}
+function searchDocs(p,q){q=q.toLowerCase();const out=[];
+  p.specs.forEach(s=>Object.keys(s.docs||{}).forEach(sec=>(s.docs[sec]||[]).forEach(d=>{
     const hay=((d.title||"")+" "+(d.doctor||"")+" "+(d.note||"")+" "+((d.labRows||[]).map(r=>r.name).join(" "))).toLowerCase();
-    if(hay.includes(q))out.push({doc:d,sec,sid:s.id,specName:s.name});
-  })})});
-  return out.sort((a,b)=>(b.doc.date||"").localeCompare(a.doc.date||""));
-}
+    if(hay.includes(q))out.push({doc:d,sec,sid:s.id,specName:s.name});})));
+  return out.sort((a,b)=>(b.doc.date||"").localeCompare(a.doc.date||""));}
 
+/* ================= boot ================= */
+if("serviceWorker"in navigator){try{navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}}
 render();
 </script>
 </body>
